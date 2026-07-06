@@ -258,11 +258,13 @@ export function queryAIChatbot(query, state) {
       });
     });
 
-    let text = "### 📦 Medicine Stock Analysis\n\n";
+    let text = "### Medicine Inventory Analysis\n\n";
     if (lowStockItems.length > 0) {
-      text += "**Alert:** The following centers have medicines below critical thresholds:\n";
+      text += "**Alert: Buffer Stock Deficits Detected**\n\n";
+      text += "| Facility | Medicine | Current Stock | Minimum Threshold | Status |\n";
+      text += "| --- | --- | --- | --- | --- |\n";
       lowStockItems.forEach(item => {
-        text += `- **${item.clinic}**: ${item.medicine} is at **${item.stock}** units (minimum threshold: ${item.threshold})\n`;
+        text += `| ${item.clinic} | ${item.medicine} | **${item.stock}** | ${item.threshold} | Deficit |\n`;
       });
       text += "\n";
     } else {
@@ -270,17 +272,25 @@ export function queryAIChatbot(query, state) {
     }
 
     if (surplusItems.length > 0) {
-      text += "**Surplus Resources:** These clinics have ample stock available for transfer if required:\n";
+      text += "**Surplus Allocation Assets:**\n\n";
+      text += "| Facility | Medicine | Current Stock | Available Surplus |\n";
+      text += "| --- | --- | --- | --- |\n";
       surplusItems.forEach(item => {
-        text += `- **${item.clinic}**: ${item.medicine} has a surplus of **${item.excess}** units.\n`;
+        text += `| ${item.clinic} | ${item.medicine} | **${item.stock}** | +${item.excess} |\n`;
       });
     }
 
     // Match recommended transfers
     const relevantRecs = recommendations.filter(r => r.type === "medicine_transfer");
     if (relevantRecs.length > 0) {
+      const topRec = relevantRecs[0];
+      const srcName = centres.find(c => c.id === topRec.action.sourceId)?.name || "Source";
+      const targetName = centres.find(c => c.id === topRec.action.targetId)?.name || "Target";
+      const qty = topRec.action.quantity;
+      const medName = topRec.title.split("Redistribute ")[1] || "Medicine";
+      
       text += "\n\n💡 **AI Transfer Recommendation:**\n";
-      text += `I recommend approving the transfer of **${relevantRecs[0].action.quantity}** units of **${relevantRecs[0].title.split("Redistribute ")[1]}** from **${centres.find(c => c.id === relevantRecs[0].action.sourceId).name}** to **${centres.find(c => c.id === relevantRecs[0].action.targetId).name}**.`;
+      text += `Transfer of **${qty}** units of **${medName}** from **${srcName}** to **${targetName}** is recommended to address buffer deficits.`;
       
       return {
         text,
@@ -299,7 +309,9 @@ export function queryAIChatbot(query, state) {
   }
 
   if (q.includes("bed") || q.includes("icu") || q.includes("occupancy")) {
-    let text = "### 🏥 Bed Availability Report\n\n";
+    let text = "### Bed Occupancy & Capacity Report\n\n";
+    text += "| Facility | ICU Bed Status | General Bed Status | Status |\n";
+    text += "| --- | --- | --- | --- |\n";
     let isShortage = false;
 
     centres.forEach(c => {
@@ -308,15 +320,19 @@ export function queryAIChatbot(query, state) {
       const genOcc = c.beds.general.occupied;
       const genTotal = c.beds.general.total;
 
+      const icuStr = icuTotal > 0 ? `${icuOcc}/${icuTotal} occupied` : "N/A";
+      const genStr = `${genOcc}/${genTotal} occupied`;
+      
+      let status = "Stable";
       if (icuOcc === icuTotal && icuTotal > 0) {
-        text += `🚨 **${c.name}**: ICU beds are **100% full** (${icuOcc}/${icuTotal})\n`;
+        status = "🚨 ICU Capacity Met";
         isShortage = true;
       } else if (icuOcc / icuTotal >= 0.8 && icuTotal > 0) {
-        text += `⚠️ **${c.name}**: ICU occupancy is high at **${((icuOcc/icuTotal)*100).toFixed(0)}%** (${icuOcc}/${icuTotal})\n`;
+        status = "⚠️ High Occupancy Alert";
         isShortage = true;
-      } else {
-        text += `🟢 **${c.name}**: ICU beds: **${icuTotal - icuOcc}** available, General beds: **${genTotal - genOcc}** available.\n`;
       }
+      
+      text += `| ${c.name} | ${icuStr} | ${genStr} | ${status} |\n`;
     });
 
     if (isShortage) {
@@ -329,7 +345,7 @@ export function queryAIChatbot(query, state) {
 
     return {
       text,
-      suggestions: ["Divert patients to Mul", "Show all recommendations"],
+      suggestions: ["Divert patients to Paithan", "Show all recommendations"],
       action: {
         type: "NAVIGATE",
         tab: "beds"
@@ -347,11 +363,13 @@ export function queryAIChatbot(query, state) {
       });
     });
 
-    let text = "### 👩‍⚕️ Doctor Attendance & Shift Report\n\n";
+    let text = "### Staffing & Attendance Registry\n\n";
     if (absentDocs.length > 0) {
-      text += "⚠️ **Unplanned Absences Today:**\n";
+      text += "**Unscheduled Facility Absences Logged:**\n\n";
+      text += "| Medical Officer | Specialty | Facility | Absenteeism Risk |\n";
+      text += "| --- | --- | --- | --- |\n";
       absentDocs.forEach(d => {
-        text += `- **${d.doctor}** (${d.specialty}) is absent at **${d.clinic}** (Risk rating: *${d.risk}*).\n`;
+        text += `| ${d.doctor} | ${d.specialty} | ${d.clinic} | ${d.risk} |\n`;
       });
 
       const doctorRecs = recommendations.filter(r => r.type === "doctor_shift");
@@ -383,11 +401,13 @@ export function queryAIChatbot(query, state) {
       });
     });
 
-    let text = "### 🔬 Diagnostic Equipment Status\n\n";
+    let text = "### Diagnostic Equipment Diagnostics\n\n";
     if (failedEq.length > 0) {
-      text += "🚨 **Failed Machinery Alerts:**\n";
+      text += "**Equipment Malfunction Log:**\n\n";
+      text += "| Facility | Device Name | Status | Fault State |\n";
+      text += "| --- | --- | --- | --- |\n";
       failedEq.forEach(eq => {
-        text += `- **${eq.clinic}**: ${eq.equipment} is report status **Down** (Equipment Failure).\n`;
+        text += `| ${eq.clinic} | ${eq.equipment} | Down | Equipment Failure |\n`;
       });
       
       const diagRecs = recommendations.filter(r => r.type === "diagnostic_redirect");
@@ -411,7 +431,7 @@ export function queryAIChatbot(query, state) {
 
   if (q.includes("transfer") || q.includes("execute") || q.includes("redistribute") || q.includes("recommend")) {
     if (recommendations.length > 0) {
-      let text = "### ⚡ Active AI Recommendations\n\n";
+      let text = "### Active AI Recommendations\n\n";
       recommendations.forEach((rec, idx) => {
         text += `${idx + 1}. **${rec.title}** (${rec.priority} Priority)\n`;
         text += `   *Action:* ${rec.message}\n`;
@@ -435,7 +455,7 @@ export function queryAIChatbot(query, state) {
 
   // Fallback response with helpful starting queries
   return {
-    text: "👋 Hello! I am your AI Health Center Assistant. How can I help you manage district operations today?\n\nYou can ask me queries like:\n- *'Which clinics have a medicine shortage?'*\n- *'Are there any vacant beds?'*\n- *'Show me active equipment failures.'*\n- *'Any doctors absent today?'*\n- *'Show me redistribution recommendations.'*",
+    text: "**SmartHealth AI Operations Assistant**\n\nWelcome to the District Informatics Control Panel. I have analyzed all facility logs in real-time. Please query me regarding inventory, staffing levels, bed occupancies, or equipment diagnostic states.\n\nSuggested operations queries:\n- *'Which clinics have a medicine shortage?'*\n- *'Are there any vacant beds?'*\n- *'Show me active equipment failures.'*\n- *'Any doctors absent today?'*\n- *'Show me redistribution recommendations.'*",
     suggestions: ["Check stockouts", "View bed availability", "Check doctor status"]
   };
 }

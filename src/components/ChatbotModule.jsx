@@ -2,13 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Sparkles, AlertCircle, ArrowRight } from 'lucide-react';
 import { queryAIChatbot } from '../utils/aiEngine';
 
-export default function ChatbotModule({ state, onNavigate, onExecuteAction, t }) {
+export default function ChatbotModule({ state, onNavigate, onExecuteAction, t, theme }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
       id: "welcome",
       sender: "bot",
-      text: "👋 Hello! I am **Gemini District Health Assistant**. I have analyzed all clinic records in real-time. Ask me anything about medicine stocks, doctor attendance, bed levels, or diagnostic machines.",
+      text: "**SmartHealth AI Operations Assistant**\n\nWelcome to the District Informatics Control Panel. I have analyzed all facility logs in real-time. Please query me regarding inventory, staffing levels, bed occupancies, or equipment diagnostic states.",
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
@@ -71,13 +71,64 @@ export default function ChatbotModule({ state, onNavigate, onExecuteAction, t })
   // Convert simple markdown strings like **bold** to JSX
   const formatMessageText = (text) => {
     const lines = text.split('\n');
-    return lines.map((line, index) => {
-      // Check for headings
-      if (line.startsWith('### ')) {
-        return <h4 key={index} className="text-sm font-bold text-teal-400 mt-2 mb-1">{line.replace('### ', '')}</h4>;
+    const elements = [];
+    let currentTable = null;
+
+    for (let index = 0; index < lines.length; index++) {
+      const line = lines[index].trim();
+
+      if (line.startsWith('|')) {
+        const cells = line.split('|').map(c => c.trim()).filter((c, i, a) => i > 0 && i < a.length - 1);
+
+        if (!currentTable) {
+          currentTable = { headers: null, rows: [] };
+        }
+
+        if (line.includes('---')) {
+          continue;
+        }
+
+        if (!currentTable.headers) {
+          currentTable.headers = cells;
+        } else {
+          currentTable.rows.push(cells);
+        }
+
+        const nextLine = lines[index + 1] ? lines[index + 1].trim() : '';
+        if (!nextLine.startsWith('|')) {
+          const tableKey = `table-${index}`;
+          elements.push(
+            <div key={tableKey} className="overflow-x-auto my-2.5 border border-slate-800/80 rounded-xl">
+              <table className="min-w-full divide-y divide-slate-800/60 text-[10px]">
+                <thead className="bg-slate-900/50">
+                  <tr>
+                    {currentTable.headers.map((h, i) => (
+                      <th key={i} className="px-3 py-2 text-left font-semibold text-teal-400">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/30">
+                  {currentTable.rows.map((row, ri) => (
+                    <tr key={ri} className="hover:bg-slate-900/20">
+                      {row.map((cell, ci) => (
+                        <td key={ci} className="px-3 py-1.5 text-slate-300 font-medium whitespace-nowrap">{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+          currentTable = null;
+        }
+        continue;
       }
-      
-      // Render bullet items
+
+      if (line.startsWith('### ')) {
+        elements.push(<h4 key={index} className="text-xs font-bold text-teal-400 mt-3 mb-1 border-b border-slate-800/30 pb-1">{line.replace('### ', '')}</h4>);
+        continue;
+      }
+
       let isBullet = false;
       let displayLine = line;
       if (line.startsWith('- ') || line.startsWith('* ')) {
@@ -85,14 +136,12 @@ export default function ChatbotModule({ state, onNavigate, onExecuteAction, t })
         displayLine = line.substring(2);
       }
 
-      // Check for bold markdowns
       const parts = displayLine.split(/\*\*([^*]+)\*\*/g);
       const renderedLine = parts.map((part, i) => {
-        if (i % 2 === 1) return <strong key={i} className="text-teal-300 font-semibold">{part}</strong>;
+        if (i % 2 === 1) return <strong key={i} className="text-teal-300 font-bold">{part}</strong>;
         return part;
       });
 
-      // Render italic markdowns
       const italicParts = [];
       renderedLine.forEach(node => {
         if (typeof node === 'string') {
@@ -107,11 +156,13 @@ export default function ChatbotModule({ state, onNavigate, onExecuteAction, t })
       });
 
       if (isBullet) {
-        return <li key={index} className="ml-4 list-disc text-xs text-slate-300 leading-relaxed">{italicParts}</li>;
+        elements.push(<li key={index} className="ml-4 list-disc text-xs text-slate-350 leading-relaxed mb-0.5">{italicParts}</li>);
+      } else if (line.trim() !== '') {
+        elements.push(<p key={index} className="text-xs text-slate-200 leading-relaxed mb-1">{italicParts}</p>);
       }
+    }
 
-      return <p key={index} className="text-xs text-slate-200 leading-relaxed mb-1">{italicParts}</p>;
-    });
+    return elements;
   };
 
   const presetQueries = [
@@ -142,10 +193,18 @@ export default function ChatbotModule({ state, onNavigate, onExecuteAction, t })
       {isOpen && (
         <div
           id="chat_window_container"
-          className="fixed bottom-6 right-6 z-50 flex h-[500px] w-96 flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/95 shadow-2xl backdrop-blur-lg animate-in slide-in-from-bottom-5 duration-300"
+          className={`fixed bottom-6 right-6 z-50 flex h-[500px] w-96 flex-col overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-lg animate-in slide-in-from-bottom-5 duration-300 ${
+            theme === 'dark'
+              ? 'border-slate-800 bg-slate-950/95 text-white'
+              : 'border-slate-200 bg-white/95 text-slate-800'
+          }`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between bg-gradient-to-r from-teal-900/60 to-cyan-900/60 px-4 py-3 border-b border-slate-800">
+          <div className={`flex items-center justify-between px-4 py-3 border-b ${
+            theme === 'dark'
+              ? 'bg-gradient-to-r from-teal-900/60 to-cyan-900/60 border-slate-800'
+              : 'bg-slate-100 border-slate-200'
+          }`}>
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/30">
                 <Sparkles className="h-4.5 w-4.5" />
@@ -174,7 +233,9 @@ export default function ChatbotModule({ state, onNavigate, onExecuteAction, t })
                   className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 shadow-md ${
                     msg.sender === 'user'
                       ? 'bg-teal-600 text-white rounded-tr-none'
-                      : 'bg-slate-900 border border-slate-800 rounded-tl-none'
+                      : theme === 'dark'
+                        ? 'bg-slate-900 border border-slate-800 rounded-tl-none'
+                        : 'bg-slate-100 border border-slate-200 text-slate-800 rounded-tl-none'
                   }`}
                 >
                   <div className="space-y-1">
@@ -223,12 +284,18 @@ export default function ChatbotModule({ state, onNavigate, onExecuteAction, t })
           </div>
 
           {/* Quick-reply templates (shown when user is starting or at bottom) */}
-          <div className="px-4 py-2 border-t border-slate-900 bg-slate-950/40 overflow-x-auto flex gap-1.5 whitespace-nowrap scrollbar-none">
+          <div className={`px-4 py-2 border-t overflow-x-auto flex gap-1.5 whitespace-nowrap scrollbar-none ${
+            theme === 'dark' ? 'border-slate-900 bg-slate-950/40' : 'border-slate-200 bg-slate-50/40'
+          }`}>
             {presetQueries.map((item, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSendMessage(item.text)}
-                className="text-[10px] bg-slate-900 border border-slate-800 text-slate-300 rounded-full px-3 py-1 hover:border-teal-500/40 hover:text-teal-400 transition-colors"
+                className={`text-[10px] border rounded-full px-3 py-1 transition-colors ${
+                  theme === 'dark'
+                    ? 'bg-slate-900 border-slate-800 text-slate-300 hover:border-teal-500/40 hover:text-teal-400'
+                    : 'bg-slate-100 border-slate-200 text-slate-600 hover:border-teal-500/40 hover:text-teal-500'
+                }`}
               >
                 {item.label}
               </button>
@@ -243,7 +310,11 @@ export default function ChatbotModule({ state, onNavigate, onExecuteAction, t })
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Ask AI coordinates, transfer recommendations..."
-              className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all"
+              className={`flex-1 border rounded-xl px-3 py-2 text-xs transition-all ${
+                theme === 'dark'
+                  ? 'bg-slate-900 border-slate-800 text-white placeholder-slate-500 focus:border-teal-500 focus:ring-teal-500'
+                  : 'bg-slate-100 border-slate-200 text-slate-800 placeholder-slate-400 focus:border-teal-500 focus:ring-teal-500'
+              }`}
             />
             <button
               onClick={() => handleSendMessage()}

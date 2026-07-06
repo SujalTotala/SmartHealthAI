@@ -5,7 +5,7 @@ import {
   RefreshCw, LogOut, ChevronDown, CheckCircle,
   LayoutDashboard, Package, Users, Bed, UserCheck, 
   Activity, ClipboardList, BarChart3, AlertCircle, 
-  MapPin, ShieldAlert
+  MapPin, ShieldAlert, X, Settings
 } from 'lucide-react';
 
 import DashboardOverview from './components/DashboardOverview';
@@ -40,6 +40,8 @@ export default function App() {
   const [recommendations, setRecommendations] = useState([]);
   const [executionLog, setExecutionLog] = useState([]);
   const [bannerAlert, setBannerAlert] = useState("");
+  const [theme, setTheme] = useState("dark");
+  const [isSandboxOpen, setIsSandboxOpen] = useState(false);
 
   const t = getTranslator(language);
 
@@ -270,8 +272,8 @@ export default function App() {
 
   // 4. SIMULATE OUTBREAK
   const handleTriggerOutbreak = () => {
-    // Pick PHC Ramnagar or Chandrapur
-    const randomClinicId = Math.random() > 0.5 ? "phc_ramnagar" : "phc_warora";
+    // Pick PHC Khuldabad or PHC Kannad
+    const randomClinicId = Math.random() > 0.5 ? "phc_khuldabad" : "phc_kannad";
     
     setCentres(prevCentres => prevCentres.map(c => {
       if (c.id === randomClinicId) {
@@ -322,8 +324,8 @@ export default function App() {
 
   // 5. SIMULATE EQUIPMENT FAILURE
   const handleTriggerEquipmentFailure = () => {
-    // Break machine at CHC Mul or CHC Bhadravati
-    const randomClinicId = Math.random() > 0.5 ? "chc_mul" : "phc_ramnagar";
+    // Break machine at CHC Paithan or CHC Sillod
+    const randomClinicId = Math.random() > 0.5 ? "chc_paithan" : "phc_khuldabad";
     
     setCentres(prevCentres => prevCentres.map(c => {
       if (c.id === randomClinicId) {
@@ -339,7 +341,7 @@ export default function App() {
     }));
 
     const clinicName = centres.find(c => c.id === randomClinicId).name;
-    const testName = randomClinicId === "chc_mul" ? "X-Ray" : "Ultrasound";
+    const testName = randomClinicId === "chc_paithan" ? "X-Ray" : "Ultrasound";
 
     const newAlert = {
       id: `failure_alert_${Date.now()}`,
@@ -402,7 +404,7 @@ export default function App() {
   ].filter(item => allowedTabs.includes(item.id));
 
   return (
-    <div className="flex min-h-screen bg-navy-950 text-slate-100 font-sans leading-normal antialiased">
+    <div className={`flex min-h-screen font-sans leading-normal antialiased transition-colors duration-300 theme-${theme} ${theme === 'dark' ? 'bg-navy-950 text-slate-100' : 'bg-slate-50 text-slate-800'}`}>
       
       {/* Top Banner Alert (Floating Toast Notification) */}
       {bannerAlert && (
@@ -416,7 +418,7 @@ export default function App() {
       )}
 
       {/* Sidebar Layout */}
-      <aside className="w-64 border-r border-slate-900 bg-navy-950 flex flex-col justify-between shrink-0 h-screen sticky top-0">
+      <aside className={`w-64 border-r flex flex-col justify-between shrink-0 h-screen sticky top-0 transition-colors duration-300 ${theme === 'dark' ? 'border-slate-900 bg-navy-950' : 'border-slate-200 bg-white'}`}>
         
         {/* Top Brand Branding */}
         <div className="p-5 space-y-5">
@@ -425,7 +427,7 @@ export default function App() {
               <Hospital className="h-5 w-5" />
             </div>
             <div>
-              <h1 className="text-sm font-bold tracking-tight text-white">{t('appTitle')}</h1>
+              <h1 className={`text-sm font-bold tracking-tight transition-colors duration-300 ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>{t('appTitle')}</h1>
               <span className="text-[9px] font-medium text-slate-500 block leading-tight">District Control Panel</span>
             </div>
           </div>
@@ -443,10 +445,12 @@ export default function App() {
                   key={item.id}
                   id={`nav_${item.id}`}
                   onClick={() => setSelectedTab(item.id)}
-                  className={`flex items-center gap-3 w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-3 w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all ${
                     isActive 
-                      ? 'bg-teal-500/10 text-teal-400 border border-teal-500/20 shadow-inner' 
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/30'
+                      ? 'bg-teal-500/10 text-teal-600 border border-teal-500/20 shadow-inner dark:text-teal-400' 
+                      : theme === 'dark' 
+                        ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/30'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                   }`}
                 >
                   <Icon className="h-4.5 w-4.5 shrink-0" />
@@ -457,7 +461,7 @@ export default function App() {
           </nav>
         </div>
 
-        {/* Sidebar Footer (Role Swapper & Language Switcher) */}
+        {/* Sidebar Footer (Role Swapper, Theme Toggle & Language Switcher) */}
         <div className="p-4 bg-slate-900/10 border-t border-slate-900 space-y-4">
           
           {/* Role selector dropdown */}
@@ -471,7 +475,7 @@ export default function App() {
                 id="select_role"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-850 hover:border-slate-700 text-slate-350 font-medium rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-teal-500 transition-all appearance-none cursor-pointer"
+                className={`w-full border font-medium rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-teal-500 transition-all appearance-none cursor-pointer ${theme === 'dark' ? 'bg-slate-900 border-slate-850 text-slate-350 hover:border-slate-700' : 'bg-slate-100 border-slate-200 text-slate-700 hover:border-slate-300'}`}
               >
                 <option value="admin">{t('adminRole')}</option>
                 <option value="pharmacist">{t('pharmacistRole')}</option>
@@ -482,6 +486,27 @@ export default function App() {
             </div>
           </div>
 
+          {/* Theme selector toggle */}
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Visual Interface Theme</label>
+            <div className="grid grid-cols-2 gap-1 bg-slate-900/80 border border-slate-850 rounded-xl p-0.5">
+              <button 
+                id="btn_theme_dark"
+                onClick={() => setTheme("dark")} 
+                className={`py-1 text-[10px] font-bold rounded-lg cursor-pointer transition-colors ${theme === 'dark' ? 'bg-teal-500 text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
+              >
+                Dark
+              </button>
+              <button 
+                id="btn_theme_light"
+                onClick={() => setTheme("light")} 
+                className={`py-1 text-[10px] font-bold rounded-lg cursor-pointer transition-colors ${theme === 'light' ? 'bg-teal-500 text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
+              >
+                Light
+              </button>
+            </div>
+          </div>
+
           {/* Language selector toggle */}
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">{t('langLabel')}</label>
@@ -489,21 +514,21 @@ export default function App() {
               <button 
                 id="btn_lang_en"
                 onClick={() => setLanguage("en")} 
-                className={`py-1 text-[10px] font-bold rounded-lg ${language === 'en' ? 'bg-teal-500 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`py-1 text-[10px] font-bold rounded-lg cursor-pointer ${language === 'en' ? 'bg-teal-500 text-white' : 'text-slate-400 hover:text-slate-200'}`}
               >
                 EN
               </button>
               <button 
                 id="btn_lang_hi"
                 onClick={() => setLanguage("hi")} 
-                className={`py-1 text-[10px] font-bold rounded-lg ${language === 'hi' ? 'bg-teal-500 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`py-1 text-[10px] font-bold rounded-lg cursor-pointer ${language === 'hi' ? 'bg-teal-500 text-white' : 'text-slate-400 hover:text-slate-200'}`}
               >
                 हिन्दी
               </button>
               <button 
                 id="btn_lang_mr"
                 onClick={() => setLanguage("mr")} 
-                className={`py-1 text-[10px] font-bold rounded-lg ${language === 'mr' ? 'bg-teal-500 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`py-1 text-[10px] font-bold rounded-lg cursor-pointer ${language === 'mr' ? 'bg-teal-500 text-white' : 'text-slate-400 hover:text-slate-200'}`}
               >
                 मराठी
               </button>
@@ -518,23 +543,36 @@ export default function App() {
       <main className="flex-1 flex flex-col min-w-0 max-h-screen overflow-y-auto">
         
         {/* Sticky Header */}
-        <header className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 bg-navy-950/80 backdrop-blur-md border-b border-slate-900">
+        <header className={`sticky top-0 z-20 flex items-center justify-between px-6 py-4 backdrop-blur-md border-b transition-colors duration-300 ${theme === 'dark' ? 'bg-navy-950/80 border-slate-900' : 'bg-white/80 border-slate-200'}`}>
           <div className="flex items-center gap-3">
-            <h2 className="text-sm font-bold text-white capitalize leading-tight">
+            <h2 className={`text-sm font-bold transition-colors duration-300 capitalize leading-tight ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>
               {centres.find(c => c.id === selectedCentreId)?.name || t('allCentres')}
             </h2>
             <span className="text-slate-700">/</span>
             <span className="text-xs text-slate-400 font-medium capitalize">{selectedTab.replace("_", " ")}</span>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {/* Simulation Sandbox Button */}
+            <button
+              onClick={() => setIsSandboxOpen(true)}
+              className={`flex items-center gap-1.5 px-3 py-2 border rounded-xl text-xs font-semibold cursor-pointer transition-colors ${
+                theme === 'dark'
+                  ? 'bg-slate-900 border-slate-850 hover:border-slate-700 text-slate-350 hover:text-white'
+                  : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-55'
+              }`}
+            >
+              <Settings className="h-4 w-4" />
+              <span>Simulation Sandbox</span>
+            </button>
+
             {/* Health Clinic Filter */}
             <div className="relative">
               <select
                 id="select_filter_centre"
                 value={selectedCentreId}
                 onChange={(e) => setSelectedCentreId(e.target.value)}
-                className="bg-slate-900 border border-slate-850 hover:border-slate-700 text-slate-300 font-semibold rounded-xl pl-3.5 pr-8 py-2 text-xs focus:outline-none focus:border-teal-500 transition-all appearance-none cursor-pointer"
+                className={`border font-semibold rounded-xl pl-3.5 pr-8 py-2 text-xs focus:outline-none focus:border-teal-500 transition-all appearance-none cursor-pointer ${theme === 'dark' ? 'bg-slate-900 border-slate-850 text-slate-300 hover:border-slate-700' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'}`}
               >
                 <option value="all">{t('allCentres')}</option>
                 {centres.map(c => (
@@ -551,11 +589,11 @@ export default function App() {
           
           {/* Active alerts warning banner for fast diagnosis */}
           {selectedTab !== "dashboard" && alerts.slice(0, 1).map((alert) => (
-            <div key={alert.id} className="p-3.5 bg-red-500/5 border border-red-500/25 rounded-2xl flex items-center justify-between gap-3 text-xs">
+            <div key={alert.id} className="p-3.5 bg-red-500/5 border border-red-500/25 rounded-2xl flex items-center justify-between gap-3 text-xs animate-in fade-in duration-200">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-red-500 animate-pulse" />
                 <span className="text-slate-400 font-medium">[{alert.centre}]</span>
-                <strong className="text-white font-bold">{alert.title}:</strong>
+                <strong className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>{alert.title}:</strong>
                 <span className="text-slate-350">{alert.message}</span>
               </div>
               <button 
@@ -654,8 +692,78 @@ export default function App() {
         onNavigate={setSelectedTab}
         onExecuteAction={handleExecuteRedistribution}
         t={t}
+        theme={theme}
       />
 
+      {/* Simulation Sandbox Modal */}
+      {isSandboxOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className={`w-full max-w-md rounded-2xl border p-6 shadow-2xl transition-all duration-300 ${theme === 'dark' ? 'bg-slate-950 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-800'}`}>
+            <div className="flex items-center justify-between border-b pb-3 border-slate-800/40">
+              <div className="flex items-center gap-2">
+                <Settings className="h-5 w-5 text-teal-400" />
+                <h3 className="text-sm font-bold uppercase tracking-wider">System Simulation Sandbox</h3>
+              </div>
+              <button 
+                onClick={() => setIsSandboxOpen(false)}
+                className="p-1 rounded hover:bg-slate-850/20 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="mt-4 space-y-4">
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Use these developer sandbox controls to simulate real-time hospital administration load scenarios, diagnostic hardware breakdowns, or shift timeline changes.
+              </p>
+
+              <div className="grid grid-cols-2 gap-3 mt-4">
+                <div className="border border-slate-800/40 rounded-xl p-3 bg-slate-900/20 text-center flex flex-col justify-between">
+                  <div>
+                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Epidemic Load</h4>
+                    <p className="text-[9px] text-slate-500 mt-1 leading-normal">Simulate sudden spikes in patient traffic due to vector outbreaks.</p>
+                  </div>
+                  <button
+                    onClick={() => { handleTriggerOutbreak(); setIsSandboxOpen(false); }}
+                    className="mt-3 w-full py-1.5 text-[10px] font-bold bg-red-950/50 hover:bg-red-500 hover:text-white border border-red-800/30 hover:border-red-500 text-red-400 rounded-lg cursor-pointer transition-all"
+                  >
+                    Trigger Outbreak
+                  </button>
+                </div>
+
+                <div className="border border-slate-800/40 rounded-xl p-3 bg-slate-900/20 text-center flex flex-col justify-between">
+                  <div>
+                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Hardware Failure</h4>
+                    <p className="text-[9px] text-slate-500 mt-1 leading-normal">Simulate offline status of critical MRI/X-Ray/Ultrasound machines.</p>
+                  </div>
+                  <button
+                    onClick={() => { handleTriggerEquipmentFailure(); setIsSandboxOpen(false); }}
+                    className="mt-3 w-full py-1.5 text-[10px] font-bold bg-amber-950/50 hover:bg-amber-500 hover:text-white border border-amber-800/30 hover:border-amber-500 text-amber-400 rounded-lg cursor-pointer transition-all"
+                  >
+                    Fail Equipment
+                  </button>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-800/40 pt-4 flex gap-2">
+                <button
+                  onClick={() => { handleResetData(); setIsSandboxOpen(false); showBanner("Simulation data state reset."); }}
+                  className="flex-1 py-2 text-[10px] font-bold bg-slate-900 hover:bg-slate-850 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white rounded-lg cursor-pointer transition-all"
+                >
+                  Reset Data Model
+                </button>
+                <button
+                  onClick={() => { handleAdvanceTimelineDay(); setIsSandboxOpen(false); }}
+                  className="flex-1 py-2 text-[10px] font-bold bg-teal-500 hover:bg-teal-600 text-white rounded-lg cursor-pointer transition-all flex items-center justify-center gap-1.5"
+                >
+                  <RefreshCw className="h-3 w-3 animate-spin-slow" />
+                  Advance 1 Day
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

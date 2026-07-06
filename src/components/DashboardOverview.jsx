@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
-export default function DashboardOverview({ state, onSelectCentre, onExecuteAction, onTriggerOutbreak, onTriggerFailure, onResetData, onAdvanceDay, t }) {
+export default function DashboardOverview({ state, onSelectCentre, onExecuteAction, t }) {
   const { centres, alerts, timeline } = state;
 
   // District Calculations
@@ -60,53 +60,22 @@ export default function DashboardOverview({ state, onSelectCentre, onExecuteActi
   return (
     <div className="space-y-6">
       
-      {/* Simulation & Environment Status Banner */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-gradient-to-r from-teal-950/40 via-slate-900/60 to-navy-950 border border-teal-500/20 rounded-2xl gap-4">
+      {/* Professional District Status Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-navy-900/40 border border-slate-800/60 rounded-2xl gap-4">
         <div>
-          <span className="text-xs font-semibold tracking-wider text-teal-400 uppercase">{t('simulationControls')}</span>
+          <span className="text-xs font-semibold tracking-wider text-teal-400 uppercase">District Operational State</span>
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-xl font-bold text-white">Day {timeline.day}</span>
+            <span className="text-lg font-bold text-white">Reporting Period: Day {timeline.day}</span>
             <span className="text-slate-500">•</span>
-            <span className="text-sm text-slate-300">{timeline.date} ({timeline.season} Season)</span>
+            <span className="text-sm text-slate-350">Calendar Date: {timeline.date}</span>
             <span className="text-slate-500">•</span>
-            <span className="text-xs bg-teal-500/10 border border-teal-500/30 text-teal-400 rounded px-1.5 py-0.5">{timeline.weather}</span>
+            <span className="text-xs bg-teal-500/10 border border-teal-500/30 text-teal-400 rounded px-1.5 py-0.5 capitalize">{timeline.season} Model Active</span>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          <button 
-            id="btn_sim_outbreak"
-            onClick={onTriggerOutbreak} 
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-red-950/40 border border-red-800/40 hover:border-red-500 text-red-400 rounded-xl transition-all"
-          >
-            <Flame className="h-3.5 w-3.5" />
-            {t('triggerOutbreak')}
-          </button>
-          <button 
-            id="btn_sim_failure"
-            onClick={onTriggerFailure} 
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-amber-950/40 border border-amber-800/40 hover:border-amber-500 text-amber-400 rounded-xl transition-all"
-          >
-            <AlertCircle className="h-3.5 w-3.5" />
-            {t('triggerFailure')}
-          </button>
-          <button 
-            id="btn_sim_reset"
-            onClick={onResetData} 
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-slate-900 border border-slate-800 hover:border-slate-600 text-slate-400 hover:text-white rounded-xl transition-all"
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-            {t('resetSimulation')}
-          </button>
-          
-          <button
-            id="btn_sim_advance"
-            onClick={onAdvanceDay}
-            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold bg-teal-500 hover:bg-teal-600 text-white rounded-xl shadow-lg shadow-teal-500/15 hover:scale-102 active:scale-98 transition-all"
-          >
-            <RefreshCw className="h-3.5 w-3.5 animate-spin-slow" />
-            {t('advanceTimeline')}
-          </button>
+        <div className="text-right">
+          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Climate Forecast</span>
+          <span className="text-xs text-slate-300 font-semibold">{timeline.weather}</span>
         </div>
       </div>
 

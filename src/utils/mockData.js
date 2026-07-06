@@ -13,10 +13,10 @@ export const INITIAL_MEDICINES_LIBRARY = [
 
 export const initialHealthCentres = [
   {
-    id: "phc_ramnagar",
-    name: "PHC Ramnagar",
+    id: "phc_khuldabad",
+    name: "PHC Khuldabad",
     type: "PHC",
-    district: "Chandrapur District (East)",
+    district: "Aurangabad District (West)",
     coordinates: { x: 35, y: 30 }, // for geographical rendering
     beds: {
       general: { total: 20, occupied: 18 },
@@ -54,10 +54,10 @@ export const initialHealthCentres = [
     ]
   },
   {
-    id: "phc_chandrapur",
-    name: "PHC Chandrapur",
+    id: "phc_vaijapur",
+    name: "PHC Vaijapur",
     type: "PHC",
-    district: "Chandrapur District (South)",
+    district: "Aurangabad District (South)",
     coordinates: { x: 55, y: 70 },
     beds: {
       general: { total: 15, occupied: 6 },
@@ -66,12 +66,12 @@ export const initialHealthCentres = [
       emergency: { total: 4, occupied: 1 }
     },
     medicines: [
-      { id: "med_paracetamol", name: "Paracetamol 500mg", category: "Analgesic / Antipyretic", stock: 850, dailyRate: 18, expiryDate: "2027-05-18", threshold: 200 }, // SURPLUS (can supply Ramnagar)
+      { id: "med_paracetamol", name: "Paracetamol 500mg", category: "Analgesic / Antipyretic", stock: 850, dailyRate: 18, expiryDate: "2027-05-18", threshold: 200 }, // SURPLUS (can supply Khuldabad)
       { id: "med_amoxicillin", name: "Amoxicillin 500mg", category: "Antibiotic", stock: 90, dailyRate: 12, expiryDate: "2026-11-20", threshold: 150 }, // LOW STOCK
       { id: "med_metformin", name: "Metformin 500mg", category: "Antidiabetic", stock: 400, dailyRate: 8, expiryDate: "2027-01-10", threshold: 100 }, // SURPLUS
       { id: "med_cetirizine", name: "Cetirizine 10mg", category: "Antihistamine", stock: 80, dailyRate: 15, expiryDate: "2026-09-30", threshold: 100 }, // LOW STOCK
       { id: "med_amlodipine", name: "Amlodipine 5mg", category: "Antihypertensive", stock: 320, dailyRate: 10, expiryDate: "2027-08-14", threshold: 120 },
-      { id: "med_ors", name: "ORS Packets", category: "Oral Rehydration", stock: 680, dailyRate: 20, expiryDate: "2027-03-22", threshold: 250 }, // SURPLUS (can supply Ramnagar)
+      { id: "med_ors", name: "ORS Packets", category: "Oral Rehydration", stock: 680, dailyRate: 20, expiryDate: "2027-03-22", threshold: 250 }, // SURPLUS (can supply Khuldabad)
       { id: "med_ibuprofen", name: "Ibuprofen 400mg", category: "NSAID", stock: 110, dailyRate: 15, expiryDate: "2026-08-30", threshold: 150 }, // LOW STOCK
       { id: "med_cough_syrup", name: "Cough Syrup 100ml", category: "Antitussive", stock: 95, dailyRate: 12, expiryDate: "2026-12-10", threshold: 80 }
     ],
@@ -94,10 +94,10 @@ export const initialHealthCentres = [
     ]
   },
   {
-    id: "chc_mul",
-    name: "CHC Mul",
+    id: "chc_paithan",
+    name: "CHC Paithan",
     type: "CHC",
-    district: "Chandrapur District (Central)",
+    district: "Aurangabad District (Central)",
     coordinates: { x: 50, y: 45 },
     beds: {
       general: { total: 50, occupied: 42 },
@@ -136,10 +136,10 @@ export const initialHealthCentres = [
     ]
   },
   {
-    id: "phc_warora",
-    name: "PHC Warora",
+    id: "phc_kannad",
+    name: "PHC Kannad",
     type: "PHC",
-    district: "Chandrapur District (North)",
+    district: "Aurangabad District (North)",
     coordinates: { x: 25, y: 15 },
     beds: {
       general: { total: 18, occupied: 15 },
@@ -149,12 +149,12 @@ export const initialHealthCentres = [
     },
     medicines: [
       { id: "med_paracetamol", name: "Paracetamol 500mg", category: "Analgesic / Antipyretic", stock: 350, dailyRate: 20, expiryDate: "2026-11-30", threshold: 200 },
-      { id: "med_amoxicillin", name: "Amoxicillin 500mg", category: "Antibiotic", stock: 380, dailyRate: 15, expiryDate: "2027-02-14", threshold: 150 }, // SURPLUS (can supply Chandrapur)
+      { id: "med_amoxicillin", name: "Amoxicillin 500mg", category: "Antibiotic", stock: 380, dailyRate: 15, expiryDate: "2027-02-14", threshold: 150 }, // SURPLUS (can supply Vaijapur)
       { id: "med_metformin", name: "Metformin 500mg", category: "Antidiabetic", stock: 80, dailyRate: 11, expiryDate: "2026-09-02", threshold: 100 }, // LOW STOCK
-      { id: "med_cetirizine", name: "Cetirizine 10mg", category: "Antihistamine", stock: 450, dailyRate: 14, expiryDate: "2027-01-20", threshold: 100 }, // SURPLUS (can supply Chandrapur)
+      { id: "med_cetirizine", name: "Cetirizine 10mg", category: "Antihistamine", stock: 450, dailyRate: 14, expiryDate: "2027-01-20", threshold: 100 }, // SURPLUS (can supply Vaijapur)
       { id: "med_amlodipine", name: "Amlodipine 5mg", category: "Antihypertensive", stock: 110, dailyRate: 12, expiryDate: "2026-10-05", threshold: 120 }, // LOW STOCK
       { id: "med_ors", name: "ORS Packets", category: "Oral Rehydration", stock: 190, dailyRate: 28, expiryDate: "2026-08-25", threshold: 250 }, // LOW STOCK
-      { id: "med_ibuprofen", name: "Ibuprofen 400mg", category: "NSAID", stock: 430, dailyRate: 16, expiryDate: "2027-03-05", threshold: 150 }, // SURPLUS (can supply Chandrapur)
+      { id: "med_ibuprofen", name: "Ibuprofen 400mg", category: "NSAID", stock: 430, dailyRate: 16, expiryDate: "2027-03-05", threshold: 150 }, // SURPLUS (can supply Vaijapur)
       { id: "med_cough_syrup", name: "Cough Syrup 100ml", category: "Antitussive", stock: 75, dailyRate: 9, expiryDate: "2026-12-15", threshold: 80 } // LOW STOCK
     ],
     doctors: [
@@ -176,10 +176,10 @@ export const initialHealthCentres = [
     ]
   },
   {
-    id: "chc_bhadravati",
-    name: "CHC Bhadravati",
+    id: "chc_sillod",
+    name: "CHC Sillod",
     type: "CHC",
-    district: "Chandrapur District (West)",
+    district: "Aurangabad District (East)",
     coordinates: { x: 75, y: 25 },
     beds: {
       general: { total: 40, occupied: 34 },
@@ -220,11 +220,11 @@ export const initialHealthCentres = [
 ];
 
 export const initialAlerts = [
-  { id: "alert_1", type: "shortage", severity: "Emergency", centre: "PHC Ramnagar", title: "Critical Medicine Shortage", message: "Paracetamol 500mg is below threshold and will run out in 3.2 days.", time: "10 mins ago" },
-  { id: "alert_2", type: "failure", severity: "Emergency", centre: "PHC Ramnagar", title: "Equipment Failure", message: "Ultrasound machine diagnostic scanner is down. Suggest redirecting patients to CHC Mul.", time: "1 hour ago" },
-  { id: "alert_3", type: "attendance", severity: "Warning", centre: "PHC Ramnagar", title: "Doctor Absent", message: "Dr. Rohan Joshi (Gynecologist) did not check in. shift coverage needed.", time: "2 hours ago" },
-  { id: "alert_4", type: "shortage", severity: "Emergency", centre: "PHC Ramnagar", title: "ICU Beds Full", message: "ICU bed occupancy is at 100% capacity.", time: "3 hours ago" },
-  { id: "alert_5", type: "failure", severity: "Warning", centre: "PHC Warora", title: "Equipment Failure", message: "X-Ray tube component malfunctioning. Suggest redirecting to PHC Ramnagar or CHC Mul.", time: "4 hours ago" }
+  { id: "alert_1", type: "shortage", severity: "Emergency", centre: "PHC Khuldabad", title: "Critical Medicine Shortage", message: "Paracetamol 500mg is below threshold and will run out in 3.2 days.", time: "10 mins ago" },
+  { id: "alert_2", type: "failure", severity: "Emergency", centre: "PHC Khuldabad", title: "Equipment Failure", message: "Ultrasound machine diagnostic scanner is down. Suggest redirecting patients to CHC Paithan.", time: "1 hour ago" },
+  { id: "alert_3", type: "attendance", severity: "Warning", centre: "PHC Khuldabad", title: "Doctor Absent", message: "Dr. Rohan Joshi (Gynecologist) did not check in. shift coverage needed.", time: "2 hours ago" },
+  { id: "alert_4", type: "shortage", severity: "Emergency", centre: "PHC Khuldabad", title: "ICU Beds Full", message: "ICU bed occupancy is at 100% capacity.", time: "3 hours ago" },
+  { id: "alert_5", type: "failure", severity: "Warning", centre: "PHC Kannad", title: "Equipment Failure", message: "X-Ray tube component malfunctioning. Suggest redirecting to PHC Khuldabad or CHC Paithan.", time: "4 hours ago" }
 ];
 
 export const INITIAL_TIMELINE = {
@@ -245,7 +245,7 @@ export const INITIAL_TIMELINE = {
 export function advanceSimulationDay(currentState) {
   const { centres, alerts, timeline } = currentState;
   const nextDay = timeline.day + 1;
-  
+
   // Advance date
   const currentDate = new Date(timeline.date);
   currentDate.setDate(currentDate.getDate() + 1);
@@ -254,7 +254,7 @@ export function advanceSimulationDay(currentState) {
   // Random seasonal fluctuation
   let season = timeline.season;
   let weather = timeline.weather;
-  
+
   // Cycle seasons every 15 days in simulation
   if (nextDay % 30 < 10) {
     season = "Monsoon";
@@ -277,7 +277,7 @@ export function advanceSimulationDay(currentState) {
       } else if (season === "Winter" && med.id === "med_cough_syrup") {
         usageFactor = 1.3;
       }
-      
+
       const actualBurn = Math.round(med.dailyRate * usageFactor * (0.8 + Math.random() * 0.4));
       const remainingStock = Math.max(0, med.stock - actualBurn);
       return {
@@ -290,21 +290,21 @@ export function advanceSimulationDay(currentState) {
     let patientFactor = 1.0;
     if (season === "Monsoon") patientFactor = 1.25; // Outbreak season
     if (season === "Summer") patientFactor = 0.9;
-    
+
     const newPatientsCount = Math.round((centre.type === "CHC" ? 250 : 100) * patientFactor * (0.7 + Math.random() * 0.6));
     const newWaitingTime = Math.round((newPatientsCount / (centre.type === "CHC" ? 6 : 3)) * (0.8 + Math.random() * 0.4));
-    
+
     // 3. Bed Management updates
     const updatedBeds = { ...centre.beds };
     Object.keys(updatedBeds).forEach(bedType => {
       const cap = updatedBeds[bedType].total;
       let occ = updatedBeds[bedType].occupied;
-      
+
       // adjust occupied beds slightly
       const delta = Math.random() > 0.5 ? 1 : -1;
       const amount = Math.floor(Math.random() * 3);
       occ = Math.max(0, Math.min(cap, occ + delta * amount));
-      
+
       // ICU stays highly occupied
       if (bedType === 'icu' && Math.random() > 0.4) {
         occ = Math.max(Math.floor(cap * 0.8), occ);
@@ -319,7 +319,7 @@ export function advanceSimulationDay(currentState) {
       let checkIn = "08:45 AM";
       // Dr. Rohan Rao and Kavita Rao have higher risk of absenteeism
       const absentChance = doc.absenteeismRisk === "High" ? 0.25 : doc.absenteeismRisk === "Medium" ? 0.12 : 0.03;
-      
+
       if (Math.random() < absentChance) {
         status = Math.random() > 0.5 ? "Absent" : "On Leave";
         checkIn = "--";
@@ -327,7 +327,7 @@ export function advanceSimulationDay(currentState) {
         const min = Math.floor(Math.random() * 30);
         checkIn = `08:${min < 10 ? '0' + min : min} AM`;
       }
-      
+
       return {
         ...doc,
         status,
@@ -345,7 +345,7 @@ export function advanceSimulationDay(currentState) {
         // 15% chance of self-repair/maintenance team completing work
         status = "Operational";
       }
-      
+
       const queueDelta = Math.random() > 0.5 ? 2 : -2;
       const newQueue = status === "Operational" ? Math.max(1, Math.min(25, diag.queueSize + queueDelta)) : 0;
 
@@ -372,7 +372,7 @@ export function advanceSimulationDay(currentState) {
 
   // Re-calculate and generate new simulation alerts
   const newAlerts = [];
-  
+
   updatedCentres.forEach(centre => {
     // Inventory alerts
     centre.medicines.forEach(med => {
