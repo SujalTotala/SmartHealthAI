@@ -17,6 +17,7 @@ import DiagnosticsModule from './components/DiagnosticsModule';
 import RedistributionModule from './components/RedistributionModule';
 import ReportsModule from './components/ReportsModule';
 import ChatbotModule from './components/ChatbotModule';
+import LoginModule from './components/LoginModule';
 
 import { 
   initialHealthCentres, 
@@ -31,6 +32,8 @@ import { getTranslator } from './utils/i18n';
 export default function App() {
   const [language, setLanguage] = useState("en");
   const [role, setRole] = useState("admin");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const [centres, setCentres] = useState(initialHealthCentres);
   const [alerts, setAlerts] = useState(initialAlerts);
   const [timeline, setTimeline] = useState(INITIAL_TIMELINE);
@@ -50,6 +53,19 @@ export default function App() {
     const recs = generateAIRecommendations(centres);
     setRecommendations(recs);
   }, [centres]);
+
+  const handleLogin = (user) => {
+    setCurrentUser(user);
+    setRole(user.role);
+    setIsAuthenticated(true);
+    setSelectedTab("dashboard");
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setCurrentUser(null);
+    setRole("admin");
+  };
 
   // Toast banner manager
   const showBanner = (msg) => {
@@ -403,6 +419,10 @@ export default function App() {
     { id: "reports", label: t('reports'), icon: BarChart3 }
   ].filter(item => allowedTabs.includes(item.id));
 
+  if (!isAuthenticated) {
+    return <LoginModule onLogin={handleLogin} theme={theme} />;
+  }
+
   return (
     <div className={`flex min-h-screen font-sans leading-normal antialiased transition-colors duration-300 theme-${theme} ${theme === 'dark' ? 'bg-navy-950 text-slate-100' : 'bg-slate-50 text-slate-800'}`}>
       
@@ -464,25 +484,20 @@ export default function App() {
         {/* Sidebar Footer (Role Swapper, Theme Toggle & Language Switcher) */}
         <div className="p-4 bg-slate-900/10 border-t border-slate-900 space-y-4">
           
-          {/* Role selector dropdown */}
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block flex items-center gap-1">
-              <ShieldAlert className="h-3 w-3" />
-              <span>{t('roleLabel')}</span>
-            </label>
-            <div className="relative">
-              <select
-                id="select_role"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className={`w-full border font-medium rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-teal-500 transition-all appearance-none cursor-pointer ${theme === 'dark' ? 'bg-slate-900 border-slate-850 text-slate-350 hover:border-slate-700' : 'bg-slate-100 border-slate-200 text-slate-700 hover:border-slate-300'}`}
+          {/* Authenticated User Profile */}
+          <div className="space-y-2">
+            <div className={`p-3 rounded-xl border flex items-center justify-between ${theme === 'dark' ? 'bg-slate-900 border-slate-850' : 'bg-slate-50 border-slate-200'}`}>
+              <div className="flex flex-col">
+                <span className={`text-xs font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>{currentUser?.name || 'User'}</span>
+                <span className="text-[10px] font-semibold text-teal-500 capitalize">{role} Access</span>
+              </div>
+              <button 
+                onClick={handleLogout}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
+                title="Secure Log Out"
               >
-                <option value="admin">{t('adminRole')}</option>
-                <option value="pharmacist">{t('pharmacistRole')}</option>
-                <option value="doctor">{t('doctorRole')}</option>
-                <option value="nurse">{t('nurseRole')}</option>
-              </select>
-              <ChevronDown className="absolute right-3 top-2.5 h-3.5 w-3.5 text-slate-500 pointer-events-none" />
+                <LogOut className="h-4 w-4" />
+              </button>
             </div>
           </div>
 
